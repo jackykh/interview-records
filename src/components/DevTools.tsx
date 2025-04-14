@@ -70,7 +70,6 @@ export const DevTools: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["interviews"] });
-      queryClient.invalidateQueries({ queryKey: ["all-interviews"] });
       setIsGenerating(false);
     },
     onError: (error) => {
@@ -85,7 +84,6 @@ export const DevTools: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["interviews"] });
-      queryClient.invalidateQueries({ queryKey: ["all-interviews"] });
     },
   });
 

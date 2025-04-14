@@ -22,7 +22,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export const Statistics: React.FC = () => {
   const { data: interviews } = useQuery({
-    queryKey: ["all-interviews"],
+    queryKey: ["interviews", "all"],
     queryFn: () => db.interviews.toArray(),
   });
 
