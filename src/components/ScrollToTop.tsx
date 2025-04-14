@@ -52,7 +52,7 @@ export const ScrollToTop: React.FC = () => {
         flex items-center justify-center
         transition-all duration-300 ease-in-out
         transform hover:scale-110
-        focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50
+        focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 cursor-pointer
         ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
       `}
       aria-label="回到頂部"

@@ -34,11 +34,11 @@ export const HolidayList: React.FC = () => {
     <div className="bg-white rounded-lg shadow p-4">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">
-          未來30天的假期 ({upcomingHolidays.length}個)
+          未來30天的公眾假期 ({upcomingHolidays.length}個)
         </h3>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
+          className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1 cursor-pointer"
         >
           <span>{isExpanded ? "收起" : "展開"}</span>
           <svg
@@ -63,7 +63,7 @@ export const HolidayList: React.FC = () => {
         // 收起狀態：顯示簡要信息
         <button
           onClick={() => setIsExpanded(true)}
-          className="w-full text-left"
+          className="w-full text-left cursor-pointer"
         >
           <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
             <p className="text-sm text-gray-600">

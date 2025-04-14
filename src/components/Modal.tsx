@@ -19,7 +19,7 @@ const Modal: React.FC<{
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
+            className="text-gray-400 hover:text-gray-500 cursor-pointer"
           >
             <svg
               className="w-5 h-5"

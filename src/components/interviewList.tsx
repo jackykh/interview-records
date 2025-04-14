@@ -176,7 +176,7 @@ export const InterviewList: React.FC = () => {
             handleStatusUpdate("passed");
             closeAllModals();
           }}
-          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
         >
           標記為通過
         </button>
@@ -185,7 +185,7 @@ export const InterviewList: React.FC = () => {
             handleStatusUpdate("failed");
             closeAllModals();
           }}
-          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
         >
           標記為失敗
         </button>
@@ -195,7 +195,7 @@ export const InterviewList: React.FC = () => {
             onClick={() => {
               setActiveModal("nextRound");
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
           >
             進入下一輪
           </button>
@@ -204,7 +204,7 @@ export const InterviewList: React.FC = () => {
           onClick={() => {
             setActiveModal("delete");
           }}
-          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded-md"
+          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded-md cursor-pointer"
         >
           刪除記錄
         </button>
@@ -221,7 +221,7 @@ export const InterviewList: React.FC = () => {
         <div className="flex justify-end space-x-2">
           <button
             onClick={closeAllModals}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer"
           >
             取消
           </button>
@@ -230,7 +230,7 @@ export const InterviewList: React.FC = () => {
               handleDelete();
               closeAllModals();
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 cursor-pointer"
           >
             確認刪除
           </button>
@@ -279,13 +279,13 @@ export const InterviewList: React.FC = () => {
           <button
             type="button"
             onClick={closeAllModals}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer"
           >
             取消
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
           >
             確認
           </button>
@@ -304,7 +304,7 @@ export const InterviewList: React.FC = () => {
         <div className="flex justify-end space-x-2">
           <button
             onClick={closeAllModals}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer"
           >
             取消
           </button>
@@ -312,7 +312,7 @@ export const InterviewList: React.FC = () => {
             onClick={() => {
               clearAllInterviewsMutation.mutate();
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 cursor-pointer"
           >
             確認清空
           </button>
@@ -361,13 +361,13 @@ export const InterviewList: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowBatchUpdateModal(false)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer"
           >
             取消
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
           >
             確認
           </button>
@@ -400,7 +400,7 @@ export const InterviewList: React.FC = () => {
         <div className="space-x-2">
           <button
             onClick={() => setShowBatchUpdateModal(true)}
-            className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md flex items-center space-x-1"
+            className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md flex items-center space-x-1 cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -420,7 +420,7 @@ export const InterviewList: React.FC = () => {
           {totalCount > 0 && (
             <button
               onClick={() => setActiveModal("clearAll")}
-              className="px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md flex items-center space-x-1"
+              className="px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md flex items-center space-x-1 cursor-pointer"
             >
               <svg
                 className="w-4 h-4"
