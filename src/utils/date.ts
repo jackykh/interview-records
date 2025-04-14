@@ -80,6 +80,6 @@ export const formatWorkingDays = (days: number, startDate: Date): string => {
     return `還有${daysUntilStart}天開始`;
   } else {
     // 面試已經開始或結束
-    return `已過去${days >= 30 ? "30+" : days}個工作日`;
+    return `已過${days >= 30 ? "30+" : days}個工作日`;
   }
 };
