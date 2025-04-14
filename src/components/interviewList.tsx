@@ -11,6 +11,7 @@ import { subDays } from "date-fns";
 import InterviewItem from "./interviewItem";
 import Modal from "./Modal";
 import LoadingSpinner from "./LoadingSpinner";
+import { differenceInDays } from "date-fns";
 
 const PAGE_SIZE = 10; // 每頁顯示的記錄數
 
@@ -145,8 +146,14 @@ export const InterviewList: React.FC = () => {
 
       // 找出需要更新的面試記錄
       const interviewsToUpdate = interviews.filter((interview) => {
-        const workingDays = calculateWorkingDays(new Date(interview.date));
-        return workingDays >= days && interview.status !== "passed";
+        const interviewDate = new Date(interview.date);
+        if (interview.status === "pending") {
+          if (differenceInDays(Date.now(), interviewDate) > days + 10) {
+            return true;
+          }
+          const workingDays = calculateWorkingDays(new Date(interview.date));
+          return workingDays >= days;
+        }
       });
 
       // 批量更新
