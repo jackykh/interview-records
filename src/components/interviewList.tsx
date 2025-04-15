@@ -24,7 +24,7 @@ export const InterviewList: React.FC = () => {
   >(null);
   const [showBatchUpdateModal, setShowBatchUpdateModal] = React.useState(false);
 
-  // 使用 useInfiniteQuery 處理分頁加載
+  // 使用 useInfiniteQuery 處理分頁載入
   const {
     data,
     fetchNextPage,
@@ -52,7 +52,7 @@ export const InterviewList: React.FC = () => {
     initialPageParam: 0,
   });
 
-  // 監聽滾動加載更多
+  // 監聽滾動載入更多
   const observerTarget = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -389,7 +389,7 @@ export const InterviewList: React.FC = () => {
 
   if (isError) {
     return (
-      <div className="text-center py-8 text-red-500">加載失敗，請刷新重試</div>
+      <div className="text-center py-8 text-red-500">載入失敗，請刷新重試</div>
     );
   }
 
@@ -462,7 +462,7 @@ export const InterviewList: React.FC = () => {
           />
         ))}
 
-        {/* 加載更多觸發器 */}
+        {/* 載入更多觸發器 */}
         <div
           ref={observerTarget}
           className="h-8 flex items-center justify-center"
@@ -470,9 +470,9 @@ export const InterviewList: React.FC = () => {
           {isFetchingNextPage ? (
             <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           ) : hasNextPage ? (
-            <span className="text-sm text-gray-500">向下滾動加載更多</span>
+            <span className="text-sm text-gray-500">向下滾動載入更多</span>
           ) : (
-            <span className="text-sm text-gray-500">已加載全部記錄</span>
+            <span className="text-sm text-gray-500">已載入全部記錄</span>
           )}
         </div>
       </div>

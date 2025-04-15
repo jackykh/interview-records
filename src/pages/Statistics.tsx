@@ -80,7 +80,7 @@ export const Statistics: React.FC = () => {
   }, [interviews]);
 
   if (!interviews) {
-    return <div>加載中...</div>;
+    return <div>載入中...</div>;
   }
 
   return (

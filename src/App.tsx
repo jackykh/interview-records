@@ -20,12 +20,12 @@ const queryClient = new QueryClient({
   },
 });
 
-// 加載動畫組件
+// 載入動畫組件
 const LoadingOverlay = () => (
   <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
     <div className="flex flex-col items-center space-y-4">
       <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
-      <p className="text-gray-600">加載公眾假期數據...</p>
+      <p className="text-gray-600">載入公眾假期數據...</p>
     </div>
   </div>
 );
