@@ -14,7 +14,14 @@ const InterviewItem: React.FC<{
           <h3 className="text-lg font-semibold">{interview.company}</h3>
           <p className="text-gray-600">{interview.position}</p>
           <p className="text-sm text-gray-500">
-            {new Date(interview.date).toLocaleDateString()}
+            {new Date(interview.date).toLocaleString("zh-TW", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
             {interview.round && ` (第${interview.round}輪)`}
           </p>
           <p className="text-sm mt-1">

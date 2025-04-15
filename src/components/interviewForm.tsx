@@ -61,10 +61,10 @@ export const InterviewForm: React.FC = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          面試日期
+          面試日期及時間
         </label>
         <input
-          type="date"
+          type="datetime-local"
           name="date"
           required
           min={formatDateForInput(minDate)}

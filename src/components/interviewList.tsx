@@ -263,7 +263,7 @@ export const InterviewList: React.FC = () => {
             下一輪面試日期
           </label>
           <input
-            type="date"
+            type="datetime-local"
             name="date"
             required
             min={formatDateForInput(

@@ -2,6 +2,7 @@ import {
   differenceInBusinessDays,
   isWeekend,
   differenceInDays,
+  differenceInHours,
   subDays,
   format,
   addDays,
@@ -27,9 +28,9 @@ export const getEarliestSelectableDate = (): Date => {
   return addDays(earliestHoliday, 30);
 };
 
-// 格式化日期為 YYYY-MM-DD 格式，用於 input[type="date"] 的 min 屬性
+// 格式化日期為 YYYY-MM-DDThh:mm 格式，用於 input[type="datetime-local"] 的 min 屬性
 export const formatDateForInput = (date: Date): string => {
-  return format(date, "yyyy-MM-dd");
+  return format(date, "yyyy-MM-dd'T'HH:mm");
 };
 
 export const calculateWorkingDays = (
@@ -41,14 +42,22 @@ export const calculateWorkingDays = (
   // 如果開始日期在結束日期之後，返回0
   if (startDate > endDate) return 0;
 
+  // 如果是同一天，返回0
+  if (startDate.toDateString() === endDate.toDateString()) return 0;
+
+  // 將開始日期調整為下一個工作日的開始（如果當天還沒結束）
+  const startOfNextDay = new Date(startDate);
+  startOfNextDay.setDate(startDate.getDate() + 1);
+  startOfNextDay.setHours(0, 0, 0, 0);
+
   // 計算工作日（不包括周末）
-  let workingDays = differenceInBusinessDays(endDate, startDate);
+  let workingDays = differenceInBusinessDays(endDate, startOfNextDay);
 
   // 減去假期天數（不包括已經是周末的假期）
   const holidaysInRange = holidays.filter((holiday) => {
     const holidayDate = new Date(holiday.date);
     return (
-      holidayDate >= startDate &&
+      holidayDate >= startOfNextDay &&
       holidayDate <= endDate &&
       !isWeekend(holidayDate)
     );
@@ -60,24 +69,38 @@ export const calculateWorkingDays = (
   return Math.min(workingDays, 30);
 };
 
-// 新增：計算距離開始還有多少天
+// 修改：計算距離開始的時間
 export const calculateDaysUntilStart = (
   startDate: Date,
   currentDate: Date = new Date()
-): number | null => {
+): { days: number | null; hours: number | null } => {
   // 如果開始日期已經過去，返回 null
-  if (startDate <= currentDate) return null;
+  if (startDate <= currentDate) {
+    return { days: null, hours: null };
+  }
 
-  // 計算剩餘天數（包括周末和假期）
-  return differenceInDays(startDate, currentDate);
+  // 計算天數差
+  const days = differenceInDays(startDate, currentDate);
+
+  // 如果不足一天，計算小時差
+  if (days === 0) {
+    const hours = differenceInHours(startDate, currentDate);
+    return { days: 0, hours };
+  }
+
+  return { days, hours: null };
 };
 
 export const formatWorkingDays = (days: number, startDate: Date): string => {
-  const daysUntilStart = calculateDaysUntilStart(startDate);
+  const timeUntilStart = calculateDaysUntilStart(startDate);
 
-  if (daysUntilStart !== null) {
+  if (timeUntilStart.days !== null) {
     // 面試還未開始
-    return `還有${daysUntilStart}天開始`;
+    if (timeUntilStart.hours !== null) {
+      // 不足一天，顯示小時
+      return `還有${timeUntilStart.hours}小時開始`;
+    }
+    return `還有${timeUntilStart.days}天開始`;
   } else {
     // 面試已經開始或結束
     return `已過${days >= 30 ? "30+" : days}個工作日`;
