@@ -1,6 +1,6 @@
 # Interview Record
 
-A modern web application for tracking job interviews and managing the interview process. Built with React and TypeScript, this application helps you keep track of your job interviews, monitor response times, and manage your job search process effectively.
+A modern web application for tracking job interviews and managing the interview process. This application helps you keep track of your job interviews, monitor response times, and manage your job search process effectively.
 
 ## Features
 
@@ -8,28 +8,24 @@ A modern web application for tracking job interviews and managing the interview 
 - ⏰ Track working days since interview
 - 📊 View interview statistics and trends
 - 📅 Automatic holiday integration (Hong Kong public holidays)
+- 🔄 Real-time status updates
 - 📱 Responsive design for all devices
 
-## Technology Stack
+## Data Privacy & Security
 
-### Frontend
+- All user data is processed and stored locally in your browser's IndexedDB
+- No data is sent to any external servers
+- No user tracking or analytics
+- Complete data privacy and security
 
-- **React** (v19) - Core UI framework
-- **TypeScript** - Type safety and better developer experience
-- **Vite** - Fast build tool and development server
-- **TailwindCSS** - Utility-first CSS framework for styling
+## Public Holiday Integration
 
-### State Management & Data Handling
+This application integrates with the Hong Kong Digital Policy Office's Public Holiday API:
 
-- **Zustand** - Lightweight state management
-- **TanStack Query** (React Query) - Server state management and caching
-- **Dexie.js** - IndexedDB wrapper for client-side storage
-
-### Additional Libraries
-
-- **date-fns** - Modern date utility library
-- **react-router-dom** - Client-side routing
-- **recharts** - Responsive charting library
+- Source: [Hong Kong Public Holidays Open Data](https://data.gov.hk/tc-data/dataset/hk-dpo-statistic-cal)
+- API Endpoint: `https://www.1823.gov.hk/common/ical/tc.json`
+- Holiday data is cached locally to minimize API calls
+- Automatic working day calculations excluding public holidays
 
 ## Getting Started
 
@@ -92,4 +88,4 @@ npm run build
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
