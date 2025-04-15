@@ -36,6 +36,8 @@ export const InterviewList: React.FC = () => {
     queryKey: ["interviews"],
     queryFn: async ({ pageParam = 0 }) => {
       const interviews = await db.interviews
+        .orderBy("date")
+        .reverse()
         .offset(pageParam * PAGE_SIZE)
         .limit(PAGE_SIZE)
         .toArray();
