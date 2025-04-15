@@ -400,7 +400,7 @@ export const InterviewList: React.FC = () => {
   return (
     <div className="relative flex flex-col h-full">
       {/* 列表頭部 */}
-      <div className="flex justify-between items-center mb-4 px-4 flex-shrink-0">
+      <div className="flex justify-between items-center mb-4 px-2 flex-shrink-0">
         <h2 className="text-lg font-semibold text-gray-900">
           面試記錄 ({totalCount})
         </h2>
@@ -449,7 +449,7 @@ export const InterviewList: React.FC = () => {
       </div>
 
       {/* 列表內容 */}
-      <div className="flex-1 overflow-y-auto px-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+      <div className="flex-1 overflow-y-auto  space-y-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
         {interviews.map((interview) => (
           <InterviewItem
             key={interview.id}

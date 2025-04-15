@@ -7,7 +7,7 @@ const InterviewItem: React.FC<{
   style: React.CSSProperties;
   onAction: (interview: Interview) => void;
 }> = ({ interview, style, onAction }) => (
-  <div style={style} className="px-4">
+  <div style={style}>
     <div className="bg-white p-4 rounded-lg shadow relative my-2">
       <div className="flex justify-between items-start">
         <div>
