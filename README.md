@@ -1,54 +1,95 @@
-# React + TypeScript + Vite
+# Interview Record
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for tracking job interviews and managing the interview process. Built with React and TypeScript, this application helps you keep track of your job interviews, monitor response times, and manage your job search process effectively.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📝 Record and track job interviews
+- ⏰ Track working days since interview
+- 📊 View interview statistics and trends
+- 📅 Automatic holiday integration (Hong Kong public holidays)
+- 📱 Responsive design for all devices
 
-## Expanding the ESLint configuration
+## Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **React** (v19) - Core UI framework
+- **TypeScript** - Type safety and better developer experience
+- **Vite** - Fast build tool and development server
+- **TailwindCSS** - Utility-first CSS framework for styling
+
+### State Management & Data Handling
+
+- **Zustand** - Lightweight state management
+- **TanStack Query** (React Query) - Server state management and caching
+- **Dexie.js** - IndexedDB wrapper for client-side storage
+
+### Additional Libraries
+
+- **date-fns** - Modern date utility library
+- **react-router-dom** - Client-side routing
+- **recharts** - Responsive charting library
+
+## Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone [repository-url]
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
 ```
+
+3. Start the development server:
+
+```bash
+npm run dev
+```
+
+4. Build for production:
+
+```bash
+npm run build
+```
+
+## Usage
+
+1. **Adding an Interview**
+
+   - Click the interview form
+   - Enter company name, position, and interview date/time
+   - Add optional notes
+   - Submit to save
+
+2. **Tracking Interviews**
+
+   - View all interviews in the main list
+   - See working days elapsed since each interview
+   - Update interview status (Pending/Passed/Failed)
+   - Add follow-up rounds for successful interviews
+
+3. **Statistics**
+   - View monthly interview statistics
+   - Track success rates
+   - Monitor response times
+
+## Features in Detail
+
+- **Working Days Calculation**
+
+  - Automatically excludes weekends
+  - Integrates Hong Kong public holidays
+  - Shows precise timing for recent interviews
+
+- **Batch Operations**
+  - Bulk status updates
+  - Clear old records
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
