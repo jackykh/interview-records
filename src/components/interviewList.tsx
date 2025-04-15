@@ -361,7 +361,7 @@ export const InterviewList: React.FC = () => {
             </div>
           </div>
           <p className="mt-1 text-sm text-gray-500">
-            將超過指定工作日數且未標記為"已錄取"的面試記錄標記為"未通過"
+            將超過指定工作日數，且未標記為"已錄取"的面試記錄標記為"未通過"
           </p>
         </div>
         <div className="flex justify-end space-x-2">
