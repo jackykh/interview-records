@@ -1,15 +1,16 @@
 import { InterviewForm } from "../components/interviewForm";
 import { InterviewList } from "../components/interviewList";
 import HolidayList from "../components/HolidayList";
-import { useIsFetching } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 const InterviewRecord = () => {
-  const isFetchingHoliday = useIsFetching({ queryKey: ["holidays"] });
+  const queryClient = useQueryClient();
+  const state = queryClient.getQueryState(["holidays"]);
 
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto py-8 px-4">
-        {isFetchingHoliday && (
+        {state?.error && (
           <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
             <div className="flex">
               <div className="flex-shrink-0">
