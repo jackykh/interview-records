@@ -3,14 +3,14 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { InterviewForm } from "./components/interviewForm";
-import { InterviewList } from "./components/interviewList";
+
 import { useHolidayStore } from "./store";
-import HolidayList from "./components/HolidayList";
 import { DevTools } from "./components/DevTools";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Statistics } from "./pages/Statistics";
+import ResignationCalculator from "./pages/ResignationCalculator";
+import InterviewRecord from "./pages/InterviewRecord";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,11 +109,10 @@ const fetchHolidays = async () => {
   return holidays;
 };
 
-// 主應用內容組件
 const AppContent = () => {
   const setHolidays = useHolidayStore((state) => state.setHolidays);
 
-  const { isLoading, error } = useQuery({
+  const { isLoading } = useQuery({
     queryKey: ["holidays"],
     queryFn: async () => {
       try {
@@ -145,65 +144,48 @@ const AppContent = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       {isLoading && <LoadingOverlay />}
-      <div className="container mx-auto py-8 px-4">
-        {error && (
-          <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-yellow-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+      <div className="min-h-screen bg-gray-100">
+        {/* 導航欄 */}
+        <nav className="bg-white shadow">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between h-16">
+              <div className="flex">
+                <Link
+                  to="/"
+                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm">
-                  無法獲取香港公眾假期數據，工作天數計算將不包括公眾假期
-                </p>
+                  面試記錄
+                </Link>
+                <Link
+                  to="/statistics"
+                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
+                >
+                  數據統計
+                </Link>
+                <Link
+                  to="/resignation-calculator"
+                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
+                >
+                  辭職日期計算器
+                </Link>
               </div>
             </div>
           </div>
-        )}
-        <h1 className="text-3xl font-bold mb-8">等 Offer...</h1>
+        </nav>
 
-        {/* 添加假期列表 */}
-        <div className="mb-8">
-          <HolidayList />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className={isLoading ? "pointer-events-none opacity-50" : ""}>
-            <h2 className="text-xl font-semibold mb-4">新增記錄</h2>
-            <InterviewForm />
-            {/* <div className="mt-4 flex justify-center">
-              <span className="text-sm text-gray-500">© 天蠍座 2025</span>
-            </div> */}
-            <div className="mt-2 flex justify-center">
-              <span className="text-sm text-gray-500">
-                意見反饋：
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="mailto:topiary.bugs.5j@icloud.com"
-                >
-                  topiary.bugs.5j@icloud.com
-                </a>
-              </span>
-            </div>
-          </div>
-          <div className={isLoading ? "pointer-events-none opacity-50" : ""}>
-            <InterviewList />
-          </div>
-        </div>
+        {/* 路由內容 */}
+        <Routes>
+          <Route path="/" element={<InterviewRecord />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route
+            path="/resignation-calculator"
+            element={<ResignationCalculator />}
+          />
+        </Routes>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -211,35 +193,7 @@ function App() {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen bg-gray-100">
-          {/* 導航欄 */}
-          <nav className="bg-white shadow">
-            <div className="container mx-auto px-4">
-              <div className="flex justify-between h-16">
-                <div className="flex">
-                  <Link
-                    to="/"
-                    className="flex items-center px-4 text-gray-700 hover:text-gray-900"
-                  >
-                    面試記錄
-                  </Link>
-                  <Link
-                    to="/statistics"
-                    className="flex items-center px-4 text-gray-700 hover:text-gray-900"
-                  >
-                    數據統計
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </nav>
-
-          {/* 路由內容 */}
-          <Routes>
-            <Route path="/" element={<AppContent />} />
-            <Route path="/statistics" element={<Statistics />} />
-          </Routes>
-        </div>
+        <AppContent />
         <ScrollToTop />
         <DevTools />
       </QueryClientProvider>
