@@ -41,8 +41,11 @@ interface BestResignationDate {
   score: number;
   lastWorkDay: Date;
   workingDays: number;
-  lastDayIsHoliday: boolean;
-  holidayType?: string;
+  lastTwoDaysHoliday: boolean;
+  holidayInfo?: {
+    lastDay?: string;
+    secondLastDay?: string;
+  };
   reason: string;
 }
 
@@ -198,24 +201,38 @@ const ResignationCalculator: React.FC = () => {
     return { isHoliday: false };
   };
 
+  // 檢查最後兩天假期狀況
+  const checkLastTwoDaysHoliday = (lastWorkDay: Date) => {
+    const nextDay = addDays(lastWorkDay, 1);
+    const lastDayHoliday = checkHolidayType(lastWorkDay);
+    const nextDayHoliday = checkHolidayType(nextDay);
+
+    return {
+      isBothHoliday: lastDayHoliday.isHoliday && nextDayHoliday.isHoliday,
+      info: {
+        lastDay: lastDayHoliday.isHoliday ? lastDayHoliday.type : "",
+        secondLastDay: nextDayHoliday.isHoliday ? nextDayHoliday.type : "",
+      },
+    };
+  };
+
   // 修改評分計算函數
   const calculateDateScore = (
     workingDays: number,
     lastWorkDay: Date
   ): number => {
-    let score = 0;
-
     // 工作日數量評分（基礎分數）
     // 每少一個工作日得1000分，使其成為絕對主導因素
     const workingDayScore = (20 - workingDays) * 1000;
 
-    // 最後工作日是假期只加少量分數（50分）
+    // 檢查最後兩天假期情況
+    const { isBothHoliday } = checkLastTwoDaysHoliday(lastWorkDay);
+
+    // 如果最後兩天都是假期，加200分；如果只有最後一天是假期，加50分
     const { isHoliday } = checkHolidayType(lastWorkDay);
-    const holidayScore = isHoliday ? 50 : 0;
+    const holidayScore = isBothHoliday ? 200 : isHoliday ? 50 : 0;
 
-    score = workingDayScore + holidayScore;
-
-    return score;
+    return workingDayScore + holidayScore;
   };
 
   // 修改尋找最佳辭職日期的函數
@@ -225,25 +242,27 @@ const ResignationCalculator: React.FC = () => {
     const dates: BestResignationDate[] = [];
 
     eachDayOfInterval({ start: today, end: sixMonthsLater })
-      .filter(isWorkingDay) // 只在工作日中尋找
+      .filter(isWorkingDay)
       .forEach((date) => {
         const result = calculateResignationDetails(date);
-        const { isHoliday, type } = checkHolidayType(result.lastWorkDay);
+        const lastTwoDays = checkLastTwoDaysHoliday(result.lastWorkDay);
 
         const reason = [];
         if (result.workingDays < 20) {
           reason.push(`只需工作 ${result.workingDays} 天`);
         }
-        if (isHoliday) {
-          reason.push(`最後工作日是${type}`);
+        if (lastTwoDays.isBothHoliday) {
+          reason.push(`最後兩天都是假期`);
+        } else if (checkHolidayType(result.lastWorkDay).isHoliday) {
+          reason.push(`最後工作日是假期`);
         }
 
         dates.push({
           date,
           lastWorkDay: result.lastWorkDay,
           workingDays: result.workingDays,
-          lastDayIsHoliday: isHoliday,
-          holidayType: type,
+          lastTwoDaysHoliday: lastTwoDays.isBothHoliday,
+          holidayInfo: lastTwoDays.info,
           score: calculateDateScore(result.workingDays, result.lastWorkDay),
           reason: reason.join("，"),
         });
@@ -251,6 +270,26 @@ const ResignationCalculator: React.FC = () => {
 
     return dates.sort((a, b) => b.score - a.score).slice(0, 10);
   };
+
+  // 修改分數說明函數
+  //   const getScoreExplanation = (
+  //     workingDays: number,
+  //     lastTwoDaysHoliday: boolean,
+  //     lastDayIsHoliday: boolean
+  //   ): string => {
+  //     const workingDayScore = (20 - workingDays) * 1000;
+  //     const holidayScore = lastTwoDaysHoliday ? 200 : lastDayIsHoliday ? 50 : 0;
+  //     const totalScore = workingDayScore + holidayScore;
+
+  //     let explanation = `總分 ${totalScore} (工作日 ${workingDayScore}`;
+  //     if (lastTwoDaysHoliday) {
+  //       explanation += " + 最後兩天假期 200";
+  //     } else if (lastDayIsHoliday) {
+  //       explanation += " + 最後日假期 50";
+  //     }
+  //     explanation += ")";
+  //     return explanation;
+  //   };
 
   // Calendar 組件的 tileClassName 屬性
   const tileClassName = ({ date }: { date: Date }): string => {
@@ -376,7 +415,8 @@ const ResignationCalculator: React.FC = () => {
         <div>
           <h3 className="text-lg font-semibold">半年內最佳辭職日期</h3>
           <p className="text-sm text-gray-500 mt-1">
-            評分方式：少一個工作日 = 1000分，最後工作日為假期 = 50分（加分項）
+            評分方式：少一個工作日 = 1000分，最後兩天連續假期 =
+            200分，最後一天假期 = 50分
           </p>
         </div>
         <button
@@ -424,9 +464,10 @@ const ResignationCalculator: React.FC = () => {
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
                       最後工作日：{format(date.lastWorkDay, "yyyy年MM月dd日")}
-                      {date.lastDayIsHoliday && (
+                      {date.lastTwoDaysHoliday && (
                         <span className="text-green-600 ml-2">
-                          ({date.holidayType})
+                          (連續假期：{date.holidayInfo?.lastDay} +{" "}
+                          {date.holidayInfo?.secondLastDay})
                         </span>
                       )}
                     </p>
@@ -435,11 +476,17 @@ const ResignationCalculator: React.FC = () => {
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
                         工作日分數：{(20 - date.workingDays) * 1000}
                       </span>
-                      {/* 最後工作日標籤 */}
-                      {date.lastDayIsHoliday && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                          最後工作日假期加分：50
+                      {/* 假期標籤 */}
+                      {date.lastTwoDaysHoliday ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500 text-white">
+                          連續假期加分：200
                         </span>
+                      ) : (
+                        date.holidayInfo?.lastDay && (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            最後日假期加分：50
+                          </span>
+                        )
                       )}
                     </div>
                   </div>
