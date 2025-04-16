@@ -553,19 +553,24 @@ const ResignationCalculator: React.FC = () => {
               </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                入職日期
-              </label>
-              <input
-                type="date"
-                value={format(config.startDate, "yyyy-MM-dd")}
-                onChange={(e) =>
-                  setConfig({ ...config, startDate: new Date(e.target.value) })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-              />
-            </div>
+            {config.isInProbation && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  入職日期
+                </label>
+                <input
+                  type="date"
+                  value={format(config.startDate, "yyyy-MM-dd")}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      startDate: new Date(e.target.value),
+                    })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
