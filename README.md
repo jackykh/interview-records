@@ -10,6 +10,7 @@ A modern web application for tracking job interviews and managing the interview 
 - 📅 Automatic holiday integration (Hong Kong public holidays)
 - 🔄 Real-time status updates
 - 📱 Responsive design for all devices
+- 🧮 Smart resignation calculator
 
 ## Data Privacy & Security
 
@@ -70,9 +71,21 @@ npm run build
    - Add follow-up rounds for successful interviews
 
 3. **Statistics**
+
    - View monthly interview statistics
    - Track success rates
    - Monitor response times
+
+4. **Resignation Calculator**
+   - Calculate optimal resignation dates
+   - Smart scoring system based on:
+     - Number of working days (primary factor)
+     - Consecutive holidays after last working day
+   - Features:
+     - Interactive calendar for date selection
+     - Detailed breakdown of working days
+     - Top 10 recommended resignation dates
+     - Visual indicators for holidays and weekends
 
 ## Features in Detail
 
@@ -83,8 +96,16 @@ npm run build
   - Shows precise timing for recent interviews
 
 - **Batch Operations**
+
   - Bulk status updates
   - Clear old records
+
+- **Resignation Planning**
+  - Intelligent date scoring system
+  - Considers standard notice period
+  - Optimizes for minimum working days
+  - Highlights dates with holiday advantages
+  - Detailed day-by-day breakdown
 
 ## License
 
