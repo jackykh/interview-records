@@ -7,6 +7,7 @@ import {
   isWeekend,
   differenceInDays,
   addDays,
+  subDays,
   isSameDay,
   eachDayOfInterval,
   startOfDay,
@@ -203,15 +204,17 @@ const ResignationCalculator: React.FC = () => {
 
   // 檢查最後兩天假期狀況
   const checkLastTwoDaysHoliday = (lastWorkDay: Date) => {
-    const nextDay = addDays(lastWorkDay, 1);
+    const lastlastDay = subDays(lastWorkDay, 1);
     const lastDayHoliday = checkHolidayType(lastWorkDay);
-    const nextDayHoliday = checkHolidayType(nextDay);
+    const lastlastDayHoliday = checkHolidayType(lastlastDay);
 
     return {
-      isBothHoliday: lastDayHoliday.isHoliday && nextDayHoliday.isHoliday,
+      isBothHoliday: lastDayHoliday.isHoliday && lastlastDayHoliday.isHoliday,
       info: {
         lastDay: lastDayHoliday.isHoliday ? lastDayHoliday.type : "",
-        secondLastDay: nextDayHoliday.isHoliday ? nextDayHoliday.type : "",
+        secondLastDay: lastlastDayHoliday.isHoliday
+          ? lastlastDayHoliday.type
+          : "",
       },
     };
   };
@@ -304,14 +307,113 @@ const ResignationCalculator: React.FC = () => {
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
     const details = calculateResignationDetails(date);
-    setResult(details);
 
-    // 如果選擇的是非工作日，添加提示信息
-    if (!isWorkingDay(date)) {
-      details.noticeType = `注意：你選擇的是${
-        isWeekend(date) ? "週末" : "公眾假期"
-      }，建議選擇工作日遞信`;
-    }
+    setResult(details);
+  };
+
+  // 修改渲染計算結果的部分
+  const renderCalculationResult = () => {
+    if (!result) return null;
+
+    // 檢查最後工作日的假期狀況
+    const lastTwoDays = checkLastTwoDaysHoliday(result.lastWorkDay);
+    const lastDayHoliday = checkHolidayType(result.lastWorkDay);
+
+    return (
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">計算結果</h3>
+        <div className="space-y-3">
+          {/* 基本信息 */}
+          <div className="flex flex-col gap-2">
+            <div>
+              <span className="text-gray-600">提交辭職信日期：</span>
+              <span className="font-medium">
+                {format(selectedDate! as Date, "yyyy年MM月dd日")}(
+                {format(selectedDate! as Date, "EEEE", {
+                  locale: zhHK,
+                })}
+                )
+              </span>
+            </div>
+            {!isWorkingDay(selectedDate! as Date) && (
+              <div>
+                <span className="text-sm text-gray-500">{`*你選擇的是${
+                  isWeekend(selectedDate! as Date) ? "週末" : "公眾假期"
+                }，建議選擇工作日遞信`}</span>
+              </div>
+            )}
+            <div>
+              <span className="text-gray-600">通知類型：</span>
+              <span className="font-medium">{result.noticeType}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">最後工作日：</span>
+              <span className="font-medium">
+                {format(result.lastWorkDay, "yyyy年MM月dd日")}(
+                {format(result.lastWorkDay, "EEEE", {
+                  locale: zhHK,
+                })}
+                )
+              </span>
+              {/* 新增：顯示假期信息 */}
+              {lastTwoDays.isBothHoliday ? (
+                <div className="mt-1 inline-flex items-center ml-2 px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                  <span className="mr-1">✨</span>
+                  最後兩天連續假期：
+                  {lastTwoDays.info.lastDay} + {lastTwoDays.info.secondLastDay}
+                </div>
+              ) : lastDayHoliday.isHoliday ? (
+                <div className="mt-1 inline-flex items-center ml-2 px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+                  <span className="mr-1">🌟</span>
+                  最後工作日是{lastDayHoliday.type}
+                </div>
+              ) : null}
+            </div>
+            <div className="flex items-center">
+              <span className="text-gray-600">需要工作：</span>
+              <span className="font-medium text-lg ml-1">
+                {result.workingDays} 天
+              </span>
+              {result.workingDays < 20 && (
+                <span className="text-green-600 text-sm ml-2">
+                  (比標準少 {20 - result.workingDays} 天)
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 工作日列表 */}
+          <div className="mt-4">
+            <h4 className="text-md font-medium mb-2">工作日期列表：</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              {result.workingDaysList.map((day) => {
+                const isHoliday = checkHolidayType(day.date);
+                return (
+                  <div
+                    key={day.date.toISOString()}
+                    className={`p-2 rounded ${
+                      isHoliday.isHoliday
+                        ? "bg-red-50 text-red-700"
+                        : "bg-blue-50 text-blue-700"
+                    }`}
+                  >
+                    <span className="mr-2">{format(day.date, "MM/dd")}</span>
+                    <span>
+                      {format(day.date, "EEEE", {
+                        locale: zhHK,
+                      })}
+                    </span>
+                    {isHoliday.isHoliday && (
+                      <span className="ml-2 text-sm">({isHoliday.type})</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // 渲染右側面板內容
@@ -322,89 +424,7 @@ const ResignationCalculator: React.FC = () => {
 
       case "details":
       default:
-        return result ? (
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">計算結果</h3>
-              </div>
-
-              <div className="space-y-2">
-                <p className="flex justify-between">
-                  <span className="text-gray-600">遞信日期：</span>
-                  <span className="font-medium">
-                    {format(result.resignDate, "yyyy年MM月dd日")}
-                  </span>
-                </p>
-                <p className="flex justify-between">
-                  <span className="text-gray-600">通知期類型：</span>
-                  <span className="font-medium">{result.noticeType}</span>
-                </p>
-                <p className="flex justify-between">
-                  <span className="text-gray-600">最後工作日：</span>
-                  <span className="font-medium">
-                    {format(result.lastWorkDay, "yyyy年MM月dd日")}
-                  </span>
-                </p>
-                <p className="flex justify-between">
-                  <span className="text-gray-600">需要工作：</span>
-                  <span className="font-medium">
-                    {result.workingDays} 個工作天
-                  </span>
-                </p>
-              </div>
-
-              {/* 詳細日期列表 */}
-              <div className="mt-6">
-                <h4 className="text-md font-semibold mb-3">詳細日期列表</h4>
-                <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
-                  <div className="space-y-1">
-                    {result.workingDaysList.map((day) => (
-                      <div
-                        key={day.date.toISOString()}
-                        className={`p-2 rounded-md flex justify-between items-center ${
-                          day.type === "workday"
-                            ? "bg-green-50 text-green-700"
-                            : day.type === "weekend"
-                            ? "bg-gray-50 text-gray-700"
-                            : "bg-red-50 text-red-700"
-                        }`}
-                      >
-                        <div>
-                          <span className="font-medium">
-                            {format(day.date, "yyyy年MM月dd日")}
-                          </span>
-                          <span className="ml-2 text-sm">
-                            {format(day.date, "(eee)", {
-                              locale: zhHK,
-                            })}
-                          </span>
-                        </div>
-                        <span className="text-sm">
-                          {day.type === "workday" ? "工作日" : day.holidayName}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-blue-50 rounded-md">
-                <div className="text-sm text-blue-600 space-y-1">
-                  <p>* 綠色背景：工作日</p>
-                  <p>* 灰色背景：週末</p>
-                  <p>* 紅色背景：公眾假期</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="text-center text-gray-500 py-8">
-              請在日曆中選擇計劃遞信的日期
-            </div>
-          </div>
-        );
+        return renderCalculationResult();
     }
   };
 
