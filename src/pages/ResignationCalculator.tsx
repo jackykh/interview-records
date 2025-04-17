@@ -441,7 +441,7 @@ const ResignationCalculator: React.FC = () => {
         </div>
         <button
           onClick={() => setRightPanelView("details")}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
         >
           返回日期詳情
         </button>
@@ -517,7 +517,7 @@ const ResignationCalculator: React.FC = () => {
                       setResult(details);
                       setRightPanelView("details");
                     }}
-                    className="ml-4 text-blue-500 hover:text-blue-600 text-sm"
+                    className="ml-4 text-blue-500 hover:text-blue-600 text-sm cursor-pointer"
                   >
                     查看詳情
                   </button>
@@ -668,7 +668,7 @@ const ResignationCalculator: React.FC = () => {
                 setBestDates(best);
                 setRightPanelView("bestDates");
               }}
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
             >
               查看半年內最佳辭職日期
             </button>
