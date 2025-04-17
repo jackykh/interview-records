@@ -48,7 +48,6 @@ interface BestResignationDate {
     lastDay?: string;
     secondLastDay?: string;
   };
-  reason: string;
 }
 
 type RightPanelView = "details" | "bestDates";
@@ -304,16 +303,6 @@ const ResignationCalculator: React.FC = () => {
         const result = calculateResignationDetails(date);
         const lastTwoDays = checkLastTwoDaysHoliday(result.lastWorkDay);
 
-        const reason = [];
-        if (result.workingDays < 20) {
-          reason.push(`只需工作 ${result.workingDays} 天`);
-        }
-        if (lastTwoDays.isBothHoliday) {
-          reason.push(`最後兩天都是假期`);
-        } else if (checkHolidayType(result.lastWorkDay).isHoliday) {
-          reason.push(`最後工作日是假期`);
-        }
-
         dates.push({
           date,
           lastWorkDay: result.lastWorkDay,
@@ -321,32 +310,11 @@ const ResignationCalculator: React.FC = () => {
           lastTwoDaysHoliday: lastTwoDays.isBothHoliday,
           holidayInfo: lastTwoDays.info,
           score: calculateDateScore(result.workingDays, result.lastWorkDay),
-          reason: reason.join("，"),
         });
       });
 
     return dates.sort((a, b) => b.score - a.score).slice(0, 10);
   };
-
-  // 修改分數說明函數
-  //   const getScoreExplanation = (
-  //     workingDays: number,
-  //     lastTwoDaysHoliday: boolean,
-  //     lastDayIsHoliday: boolean
-  //   ): string => {
-  //     const workingDayScore = (20 - workingDays) * 1000;
-  //     const holidayScore = lastTwoDaysHoliday ? 200 : lastDayIsHoliday ? 50 : 0;
-  //     const totalScore = workingDayScore + holidayScore;
-
-  //     let explanation = `總分 ${totalScore} (工作日 ${workingDayScore}`;
-  //     if (lastTwoDaysHoliday) {
-  //       explanation += " + 最後兩天假期 200";
-  //     } else if (lastDayIsHoliday) {
-  //       explanation += " + 最後日假期 50";
-  //     }
-  //     explanation += ")";
-  //     return explanation;
-  //   };
 
   // Calendar 組件的 tileClassName 屬性
   const tileClassName = ({ date }: { date: Date }): string => {
