@@ -70,7 +70,7 @@ export const HolidayList: React.FC = () => {
               最近的假期：
               {upcomingHolidays.slice(0, 2).map((holiday, index) => {
                 const holidayDate = new Date(holiday.date);
-                const daysUntil = differenceInDays(holidayDate, new Date());
+                const daysUntil = differenceInDays(holidayDate, new Date()) + 1;
                 return (
                   <span key={holiday.date.toString()}>
                     {index > 0 && "、"}
@@ -100,7 +100,7 @@ export const HolidayList: React.FC = () => {
         <div className="space-y-2 transition-all duration-300">
           {upcomingHolidays.map((holiday) => {
             const holidayDate = new Date(holiday.date);
-            const daysUntil = differenceInDays(holidayDate, new Date());
+            const daysUntil = differenceInDays(holidayDate, new Date()) + 1;
 
             return (
               <div
