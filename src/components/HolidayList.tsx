@@ -1,6 +1,11 @@
 import React from "react";
 import { useHolidayStore } from "../store";
-import { format, addDays, isWithinInterval, differenceInDays } from "date-fns";
+import {
+  format,
+  addDays,
+  isWithinInterval,
+  differenceInCalendarDays,
+} from "date-fns";
 
 export const HolidayList: React.FC = () => {
   const holidays = useHolidayStore((state) => state.holidays);
@@ -70,7 +75,10 @@ export const HolidayList: React.FC = () => {
               最近的假期：
               {upcomingHolidays.slice(0, 2).map((holiday, index) => {
                 const holidayDate = new Date(holiday.date);
-                const daysUntil = differenceInDays(holidayDate, new Date()) + 1;
+                const daysUntil = differenceInCalendarDays(
+                  holidayDate,
+                  new Date()
+                );
                 return (
                   <span key={holiday.date.toString()}>
                     {index > 0 && "、"}
@@ -100,8 +108,7 @@ export const HolidayList: React.FC = () => {
         <div className="space-y-2 transition-all duration-300">
           {upcomingHolidays.map((holiday) => {
             const holidayDate = new Date(holiday.date);
-            const daysUntil = differenceInDays(holidayDate, new Date()) + 1;
-
+            const daysUntil = differenceInCalendarDays(holidayDate, new Date());
             return (
               <div
                 key={holiday.date.toString()}

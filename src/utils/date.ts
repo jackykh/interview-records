@@ -1,13 +1,13 @@
 import {
   differenceInBusinessDays,
   isWeekend,
-  differenceInDays,
-  differenceInHours,
   subDays,
   format,
   addDays,
+  formatDistance,
 } from "date-fns";
 import { useHolidayStore } from "../store";
+import { zhHK } from "date-fns/locale";
 
 // 新增：獲取最早可選擇的日期
 export const getEarliestSelectableDate = (): Date => {
@@ -69,38 +69,11 @@ export const calculateWorkingDays = (
   return Math.min(workingDays, 30);
 };
 
-// 修改：計算距離開始的時間
-export const calculateDaysUntilStart = (
-  startDate: Date,
-  currentDate: Date = new Date()
-): { days: number | null; hours: number | null } => {
-  // 如果開始日期已經過去，返回 null
-  if (startDate <= currentDate) {
-    return { days: null, hours: null };
-  }
-
-  // 計算天數差
-  const days = differenceInDays(startDate, currentDate);
-
-  // 如果不足一天，計算小時差
-  if (days === 0) {
-    const hours = differenceInHours(startDate, currentDate);
-    return { days: 0, hours };
-  }
-
-  return { days, hours: null };
-};
-
 export const formatWorkingDays = (days: number, startDate: Date): string => {
-  const timeUntilStart = calculateDaysUntilStart(startDate);
-
-  if (timeUntilStart.days !== null) {
-    // 面試還未開始
-    if (timeUntilStart.hours !== null) {
-      // 不足一天，顯示小時
-      return `還有${timeUntilStart.hours}小時開始`;
-    }
-    return `還有${timeUntilStart.days}天開始`;
+  if (startDate >= new Date()) {
+    return `${formatDistance(startDate, new Date(), {
+      locale: zhHK,
+    })}後開始`;
   } else {
     // 面試已經開始或結束
     return `已過${days >= 30 ? "30+" : days}個工作日`;

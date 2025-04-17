@@ -5,13 +5,13 @@ import {
   format,
   addMonths,
   isWeekend,
-  differenceInDays,
   addDays,
   subDays,
   isSameDay,
   eachDayOfInterval,
   startOfDay,
   isBefore,
+  differenceInCalendarDays,
 } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import { Value } from "react-calendar/src/shared/types.js";
@@ -86,7 +86,10 @@ const ResignationCalculator: React.FC = () => {
 
   // 計算最後工作日和通知類型
   const calculateResignationDetails = (resignDate: Date): CalculationResult => {
-    const employmentDuration = differenceInDays(resignDate, config.startDate);
+    const employmentDuration = differenceInCalendarDays(
+      resignDate,
+      config.startDate
+    );
     const isInFirstMonth = employmentDuration <= 30;
     let lastWorkDay: Date;
     let noticeType: string;
