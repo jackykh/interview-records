@@ -2,6 +2,7 @@ import {
   QueryClient,
   QueryClientProvider,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 
 import { useHolidayStore } from "./store";
@@ -112,6 +113,15 @@ const fetchHolidays = async () => {
 
 const AppContent = () => {
   const setHolidays = useHolidayStore((state) => state.setHolidays);
+  const queryClient = useQueryClient();
+
+  // 添加清除緩存並重新獲取的函數
+  const handleRefreshHolidays = () => {
+    // 清除 localStorage 中的緩存
+    localStorage.removeItem("holidaysCache");
+    // 使當前的 query 失效並重新獲取
+    queryClient.invalidateQueries({ queryKey: ["holidays"] });
+  };
 
   const { isLoading, error } = useQuery({
     queryKey: ["holidays"],
@@ -172,6 +182,26 @@ const AppContent = () => {
                   數據統計
                 </Link>
               </div>
+              {/* 添加更新假期數據按鈕 */}
+              <div className="flex items-center">
+                <button
+                  onClick={handleRefreshHolidays}
+                  className="flex items-center px-3 py-1 rounded text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
+                >
+                  <svg
+                    className="w-4 h-4 mr-1"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  更新假期數據
+                </button>
+              </div>
             </div>
           </div>
         </nav>
@@ -195,6 +225,12 @@ const AppContent = () => {
               <div className="ml-3">
                 <p className="text-sm">
                   無法獲取香港公眾假期數據，工作天數計算將不包括公眾假期
+                  <button
+                    onClick={handleRefreshHolidays}
+                    className="ml-2 text-yellow-800 underline hover:text-yellow-900 cursor-pointer"
+                  >
+                    重試
+                  </button>
                 </p>
               </div>
             </div>
