@@ -153,14 +153,14 @@ const ResignationCalculator: React.FC = () => {
   const checkHolidayType = (
     date: Date
   ): { isHoliday: boolean; type?: string } => {
-    const isWorkDay = isWorkingDay(date);
+    if (isWorkingDay(date)) {
+      return { isHoliday: false };
+    }
+
     const isWeekendDay = isWeekend(date);
     const holidayName = getHolidayName(date);
 
-    if (isWorkDay) {
-      // 工作日
-      return { isHoliday: false };
-    } else if (holidayName) {
+    if (holidayName) {
       // 公眾假期
       return { isHoliday: true, type: holidayName };
     } else if (isWeekendDay) {
@@ -364,18 +364,16 @@ const ResignationCalculator: React.FC = () => {
             <div>
               <span className="text-gray-600">提交辭職信日期：</span>
               <span className="font-medium">
-                {format(selectedDate! as Date, "yyyy年MM月dd日")}(
-                {format(selectedDate! as Date, "EEEE", {
+                {format(selectedDate as Date, "yyyy年MM月dd日")}(
+                {format(selectedDate as Date, "EEEE", {
                   locale: zhHK,
                 })}
                 )
               </span>
             </div>
-            {!isWorkingDay(selectedDate! as Date) && (
+            {result.workingDaysList[0].isHoliday && (
               <div>
-                <span className="text-sm text-gray-500">{`*你選擇的是${
-                  isWeekend(selectedDate! as Date) ? "週末" : "公眾假期"
-                }，建議選擇工作日遞信`}</span>
+                <span className="text-sm text-gray-500">{`*你選擇的是${result.workingDaysList[0].holidayName}，建議選擇工作日遞信`}</span>
               </div>
             )}
             <div>
