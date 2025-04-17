@@ -7,7 +7,7 @@ import {
 import { useHolidayStore } from "./store";
 import { DevTools } from "./components/DevTools";
 import { ScrollToTop } from "./components/ScrollToTop";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import { Statistics } from "./pages/Statistics";
 import ResignationCalculator from "./pages/ResignationCalculator";
 import InterviewRecord from "./pages/InterviewRecord";
@@ -156,6 +156,12 @@ const AppContent = () => {
                   to="/"
                   className="flex items-center px-4 text-gray-700 hover:text-gray-900"
                 >
+                  辭職日期計算器
+                </Link>
+                <Link
+                  to="/interview-record"
+                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
+                >
                   面試記錄
                 </Link>
                 <Link
@@ -164,12 +170,6 @@ const AppContent = () => {
                 >
                   數據統計
                 </Link>
-                <Link
-                  to="/resignation-calculator"
-                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
-                >
-                  辭職日期計算器
-                </Link>
               </div>
             </div>
           </div>
@@ -177,11 +177,12 @@ const AppContent = () => {
 
         {/* 路由內容 */}
         <Routes>
-          <Route path="/" element={<InterviewRecord />} />
+          <Route path="/" element={<ResignationCalculator />} />
+          <Route path="/interview-record" element={<InterviewRecord />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route
             path="/resignation-calculator"
-            element={<ResignationCalculator />}
+            element={<Navigate to="/" replace />}
           />
         </Routes>
       </div>
