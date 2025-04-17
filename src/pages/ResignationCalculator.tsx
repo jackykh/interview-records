@@ -655,8 +655,7 @@ const ResignationCalculator: React.FC = () => {
               locale="zh-HK"
             />
             <div className="mt-3 text-sm text-gray-500">
-              <p>• 灰色日期：週末</p>
-              <p>• 紅色日期：公眾假期</p>
+              <p>• 紅色日期：週末或公眾假期</p>
               <p>• 建議選擇工作日遞信</p>
             </div>
           </div>
