@@ -16,6 +16,7 @@ import {
 import "react-calendar/dist/Calendar.css";
 import { Value } from "react-calendar/src/shared/types.js";
 import { zhHK } from "date-fns/locale";
+import WorkingDaySettingsPanel from "../components/WorkingDaySettingsPanel";
 
 interface ResignationConfig {
   isInProbation: boolean;
@@ -57,6 +58,10 @@ interface DateRangePickerProps {
   endDate: Date | null;
   onStartDateChange: (date: Date | null) => void;
   onEndDateChange: (date: Date | null) => void;
+}
+
+interface WorkingDaySettings {
+  workingDays: number[]; // 0-6 代表週日到週六
 }
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({
@@ -109,7 +114,6 @@ const ResignationCalculator: React.FC = () => {
     companyNoticePeriodValue: null,
   });
   const [selectedDate, setSelectedDate] = useState<Value>(null);
-  const [result, setResult] = useState<CalculationResult | null>(null);
   const [bestDates, setBestDates] = useState<BestResignationDate[]>([]);
   const [rightPanelView, setRightPanelView] =
     useState<RightPanelView>("details");
@@ -118,6 +122,13 @@ const ResignationCalculator: React.FC = () => {
   const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
   const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
   const [showCustomRange, setShowCustomRange] = useState(false);
+
+  // 添加工作日設置相關 state
+  const [workingDaySettings, setWorkingDaySettings] =
+    useState<WorkingDaySettings>({
+      workingDays: [1, 2, 3, 4, 5], // 預設週一到週五
+    });
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // 計算最後工作日和通知類型
   const calculateResignationDetails = (resignDate: Date): CalculationResult => {
@@ -184,6 +195,28 @@ const ResignationCalculator: React.FC = () => {
     return holiday?.name;
   };
 
+  // 檢查日期是否為假期，並返回假期類型
+  const checkHolidayType = (
+    date: Date
+  ): { isHoliday: boolean; type?: string } => {
+    const isWorkDay = isWorkingDay(date);
+    const isWeekendDay = isWeekend(date);
+    const holidayName = getHolidayName(date);
+
+    if (isWorkDay) {
+      // 工作日
+      return { isHoliday: false };
+    } else if (holidayName) {
+      // 公眾假期
+      return { isHoliday: true, type: holidayName };
+    } else if (isWeekendDay) {
+      // 週末
+      return { isHoliday: true, type: "週末" };
+    } else {
+      return { isHoliday: true, type: "自定義週休" };
+    }
+  };
+
   // 修改計算工作日數的函數
   const calculateWorkingDays = (
     startDate: Date,
@@ -197,17 +230,16 @@ const ResignationCalculator: React.FC = () => {
     let currentDate = startDate;
 
     while (currentDate <= endDate) {
-      const isWeekendDay = isWeekend(currentDate);
-      const holidayName = getHolidayName(currentDate);
+      const holidaysType = checkHolidayType(currentDate);
 
-      if (!isWeekendDay && !holidayName) {
+      if (!holidaysType.isHoliday) {
         // 工作日
         count++;
         daysList.push({
           date: new Date(currentDate),
           type: "workday",
         });
-      } else if (isWeekendDay) {
+      } else if (holidaysType.type === "週末") {
         // 週末
         daysList.push({
           date: new Date(currentDate),
@@ -215,12 +247,19 @@ const ResignationCalculator: React.FC = () => {
           holidayName: "週末",
           type: "weekend",
         });
+      } else if (holidaysType.type === "自定義週休") {
+        daysList.push({
+          date: new Date(currentDate),
+          isHoliday: true,
+          holidayName: "自定義週休",
+          type: "holiday",
+        });
       } else {
         // 公眾假期
         daysList.push({
           date: new Date(currentDate),
           isHoliday: true,
-          holidayName,
+          holidayName: holidaysType.type,
           type: "holiday",
         });
       }
@@ -231,27 +270,17 @@ const ResignationCalculator: React.FC = () => {
     return { count, daysList };
   };
 
-  // 判斷是否為工作日（用於最佳辭職日計算）
-  const isWorkingDay = (date: Date): boolean => {
-    const isWeekendDay = isWeekend(date);
-    const isHolidayDay = holidays.some((holiday) =>
+  // 修改工作日判斷函數
+  const isWorkingDay = (date: Date) => {
+    if (!date) return;
+    const day = date.getDay();
+    // 檢查是否是工作日
+    const isWorkDay = workingDaySettings.workingDays.includes(day);
+    // 檢查是否是公眾假期
+    const isHoliday = holidays.some((holiday) =>
       isSameDay(new Date(holiday.date), date)
     );
-    return !isWeekendDay && !isHolidayDay;
-  };
-
-  // 檢查日期是否為假期，並返回假期類型
-  const checkHolidayType = (
-    date: Date
-  ): { isHoliday: boolean; type?: string } => {
-    if (isWeekend(date)) {
-      return { isHoliday: true, type: "週末" };
-    }
-    const holiday = holidays.find((h) => isSameDay(new Date(h.date), date));
-    if (holiday) {
-      return { isHoliday: true, type: holiday.name };
-    }
-    return { isHoliday: false };
+    return isWorkDay && !isHoliday;
   };
 
   // 檢查最後兩天假期狀況
@@ -328,14 +357,12 @@ const ResignationCalculator: React.FC = () => {
   // 修改日期選擇處理函數
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    const details = calculateResignationDetails(date);
-
-    setResult(details);
   };
 
   // 修改渲染計算結果的部分
   const renderCalculationResult = () => {
-    if (!result) return null;
+    if (!selectedDate) return;
+    const result = calculateResignationDetails(selectedDate as Date);
 
     // 檢查最後工作日的假期狀況
     const lastTwoDays = checkLastTwoDaysHoliday(result.lastWorkDay);
@@ -343,7 +370,40 @@ const ResignationCalculator: React.FC = () => {
 
     return (
       <div className="bg-white p-4 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">計算結果</h3>
+        {/* 添加設置按鈕 */}
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">計算結果</h3>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex items-center text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
+          >
+            <svg
+              className="w-4 h-4 mr-1"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            工作日設置
+          </button>
+        </div>
+
+        {/* 顯示當前工作日設置 */}
+        <div className="mb-4 p-3 bg-gray-50 rounded text-sm">
+          <p className="text-gray-600">
+            目前的工作日為：
+            {workingDaySettings.workingDays
+              .map((day) => ["日", "一", "二", "三", "四", "五", "六"][day])
+              .map((day) => `週${day}`)
+              .join("、")}
+          </p>
+        </div>
+
         <div className="space-y-3">
           {/* 基本信息 */}
           <div className="flex flex-col gap-2">
@@ -602,8 +662,6 @@ const ResignationCalculator: React.FC = () => {
                   <button
                     onClick={() => {
                       setSelectedDate(date.date);
-                      const details = calculateResignationDetails(date.date);
-                      setResult(details);
                       setRightPanelView("details");
                     }}
                     className="ml-4 text-blue-500 hover:text-blue-600 text-sm cursor-pointer"
@@ -767,6 +825,15 @@ const ResignationCalculator: React.FC = () => {
         {/* 右側：動態面板 */}
         <div className="space-y-6">{renderRightPanel()}</div>
       </div>
+
+      {/* 添加設置面板 */}
+      {isSettingsOpen && (
+        <WorkingDaySettingsPanel
+          settings={workingDaySettings}
+          onSettingsChange={setWorkingDaySettings}
+          onClose={() => setIsSettingsOpen(false)}
+        />
+      )}
     </div>
   );
 };
