@@ -17,6 +17,7 @@ import "react-calendar/dist/Calendar.css";
 import { Value } from "react-calendar/src/shared/types.js";
 import { zhHK } from "date-fns/locale";
 import WorkingDaySettingsPanel from "../components/WorkingDaySettingsPanel";
+import DateRangePicker from "../components/DateRangePicker";
 
 interface ResignationConfig {
   isInProbation: boolean;
@@ -53,56 +54,9 @@ interface BestResignationDate {
 
 type RightPanelView = "details" | "bestDates";
 
-interface DateRangePickerProps {
-  startDate: Date | null;
-  endDate: Date | null;
-  onStartDateChange: (date: Date | null) => void;
-  onEndDateChange: (date: Date | null) => void;
-}
-
 interface WorkingDaySettings {
   workingDays: number[]; // 0-6 代表週日到週六
 }
-
-const DateRangePicker: React.FC<DateRangePickerProps> = ({
-  startDate,
-  endDate,
-  onStartDateChange,
-  onEndDateChange,
-}) => {
-  return (
-    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-      <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-600">開始日期：</label>
-        <input
-          type="date"
-          className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={startDate ? format(startDate, "yyyy-MM-dd") : ""}
-          min={format(new Date(), "yyyy-MM-dd")}
-          onChange={(e) =>
-            onStartDateChange(e.target.value ? new Date(e.target.value) : null)
-          }
-        />
-      </div>
-      <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-600">結束日期：</label>
-        <input
-          type="date"
-          className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
-          min={
-            startDate
-              ? format(startDate, "yyyy-MM-dd")
-              : format(new Date(), "yyyy-MM-dd")
-          }
-          onChange={(e) =>
-            onEndDateChange(e.target.value ? new Date(e.target.value) : null)
-          }
-        />
-      </div>
-    </div>
-  );
-};
 
 const ResignationCalculator: React.FC = () => {
   const holidays = useHolidayStore((state) => state.holidays);
@@ -766,14 +720,21 @@ const ResignationCalculator: React.FC = () => {
                     type="number"
                     min={0}
                     value={config.companyNoticePeriodValue || ""}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      let targetValue = e.target.value
+                        ? parseInt(e.target.value)
+                        : 0;
+                      const maxValue =
+                        config.companyNoticePeriodType === "months" ? 6 : 180;
+
+                      if (targetValue > maxValue) {
+                        targetValue = maxValue;
+                      }
                       setConfig({
                         ...config,
-                        companyNoticePeriodValue: e.target.value
-                          ? parseInt(e.target.value)
-                          : null,
-                      })
-                    }
+                        companyNoticePeriodValue: targetValue,
+                      });
+                    }}
                     placeholder="留空表示按《僱傭條例》計算"
                     className="block w-full rounded-md border-gray-300 shadow-sm"
                   />
@@ -783,7 +744,11 @@ const ResignationCalculator: React.FC = () => {
                 </div>
               </div>
               <p className="mt-1 text-sm text-gray-500">
-                留空表示按《僱傭條例》計算（非試用期為一個月通知期）
+                留空表示按《僱傭條例》計算（非試用期為一個月通知期，最大值為
+                {config.companyNoticePeriodType === "months"
+                  ? "六個月"
+                  : "180日"}
+                ）
               </p>
             </div>
           </div>
