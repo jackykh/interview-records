@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { db } from "../db";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
-// import { Interview } from "../types";
+import { Link } from "react-router-dom";
 
 // 圖表可以使用 recharts
 import {
@@ -85,7 +85,15 @@ export const Statistics: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">面試數據統計</h1>
+      <div className="flex mb-8 justify-between">
+        <h1 className="text-3xl font-bold">等 Offer...</h1>
+        <Link
+          to="/interview-record"
+          className="flex items-center px-4 text-gray-700 hover:text-gray-900"
+        >
+          返回面試紀錄
+        </Link>
+      </div>
 
       {/* 總體統計 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

@@ -175,12 +175,12 @@ const AppContent = () => {
                 >
                   面試記錄
                 </Link>
-                <Link
+                {/* <Link
                   to="/statistics"
                   className="flex items-center px-4 text-gray-700 hover:text-gray-900"
                 >
                   數據統計
-                </Link>
+                </Link> */}
               </div>
               {/* 添加更新假期數據按鈕 */}
               <div className="flex items-center">
