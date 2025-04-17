@@ -11,6 +11,7 @@ import {
   isSameDay,
   eachDayOfInterval,
   startOfDay,
+  isBefore,
 } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import { Value } from "react-calendar/src/shared/types.js";
@@ -52,6 +53,53 @@ interface BestResignationDate {
 
 type RightPanelView = "details" | "bestDates";
 
+interface DateRangePickerProps {
+  startDate: Date | null;
+  endDate: Date | null;
+  onStartDateChange: (date: Date | null) => void;
+  onEndDateChange: (date: Date | null) => void;
+}
+
+const DateRangePicker: React.FC<DateRangePickerProps> = ({
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+}) => {
+  return (
+    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-gray-600">開始日期：</label>
+        <input
+          type="date"
+          className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={startDate ? format(startDate, "yyyy-MM-dd") : ""}
+          min={format(new Date(), "yyyy-MM-dd")}
+          onChange={(e) =>
+            onStartDateChange(e.target.value ? new Date(e.target.value) : null)
+          }
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-gray-600">結束日期：</label>
+        <input
+          type="date"
+          className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
+          min={
+            startDate
+              ? format(startDate, "yyyy-MM-dd")
+              : format(new Date(), "yyyy-MM-dd")
+          }
+          onChange={(e) =>
+            onEndDateChange(e.target.value ? new Date(e.target.value) : null)
+          }
+        />
+      </div>
+    </div>
+  );
+};
+
 const ResignationCalculator: React.FC = () => {
   const holidays = useHolidayStore((state) => state.holidays);
   const [config, setConfig] = useState<ResignationConfig>({
@@ -66,6 +114,11 @@ const ResignationCalculator: React.FC = () => {
   const [bestDates, setBestDates] = useState<BestResignationDate[]>([]);
   const [rightPanelView, setRightPanelView] =
     useState<RightPanelView>("details");
+
+  // 添加日期範圍選擇的 state
+  const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
+  const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
+  const [showCustomRange, setShowCustomRange] = useState(false);
 
   // 計算最後工作日和通知類型
   const calculateResignationDetails = (resignDate: Date): CalculationResult => {
@@ -241,10 +294,11 @@ const ResignationCalculator: React.FC = () => {
   // 修改尋找最佳辭職日期的函數
   const findBestResignationDates = () => {
     const today = startOfDay(new Date());
-    const sixMonthsLater = addMonths(today, 6);
+    const startDate = customStartDate || today;
+    const endDate = customEndDate || addMonths(today, 6);
     const dates: BestResignationDate[] = [];
 
-    eachDayOfInterval({ start: today, end: sixMonthsLater })
+    eachDayOfInterval({ start: startDate, end: endDate })
       .filter(isWorkingDay)
       .forEach((date) => {
         const result = calculateResignationDetails(date);
@@ -431,21 +485,88 @@ const ResignationCalculator: React.FC = () => {
   // 修改最佳日期的展示
   const renderBestDates = () => (
     <div className="bg-white p-4 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold">半年內最佳辭職日期</h3>
+          <h3 className="text-lg font-semibold">最佳辭職日期</h3>
           <p className="text-sm text-gray-500 mt-1">
             評分方式：少一個工作日 = 1000分，最後兩天連續假期 =
             200分，最後一天假期 = 50分
           </p>
         </div>
-        <button
-          onClick={() => setRightPanelView("details")}
-          className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-        >
-          返回日期詳情
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCustomRange(!showCustomRange)}
+            className="text-sm text-blue-600 hover:text-blue-700 flex items-center cursor-pointer"
+          >
+            <svg
+              className={`w-4 h-4 mr-1 transform transition-transform ${
+                showCustomRange ? "rotate-180" : ""
+              }`}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+            {showCustomRange ? "收起" : "指定時間範圍"}
+          </button>
+          <button
+            onClick={() => setRightPanelView("details")}
+            className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
+          >
+            返回日期詳情
+          </button>
+        </div>
       </div>
+
+      {/* 日期範圍選擇器 */}
+      {showCustomRange && (
+        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+          <DateRangePicker
+            startDate={customStartDate}
+            endDate={customEndDate}
+            onStartDateChange={(date) => {
+              setCustomStartDate(date);
+              if (date && customEndDate && isBefore(customEndDate, date)) {
+                setCustomEndDate(null);
+              }
+            }}
+            onEndDateChange={setCustomEndDate}
+          />
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={() => {
+                setCustomStartDate(null);
+                setCustomEndDate(null);
+              }}
+              className="text-sm text-gray-600 hover:text-gray-800 mr-2"
+            >
+              重置
+            </button>
+            <button
+              onClick={() => setBestDates(findBestResignationDates())}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              disabled={!!(customStartDate && !customEndDate)}
+            >
+              搜尋
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 日期範圍提示 */}
+      <div className="text-sm text-gray-600 mb-4">
+        搜尋範圍：
+        {customStartDate
+          ? format(customStartDate, "yyyy年MM月dd日")
+          : "今天"}{" "}
+        至{customEndDate ? format(customEndDate, "yyyy年MM月dd日") : "六個月後"}
+      </div>
+
+      {/* 現有的最佳日期列表保持不變 */}
       <div className="space-y-3">
         {bestDates.map((date, index) => (
           <div
@@ -670,7 +791,7 @@ const ResignationCalculator: React.FC = () => {
               }}
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
             >
-              查看半年內最佳辭職日期
+              查看最佳辭職日期
             </button>
           </div>
         </div>
