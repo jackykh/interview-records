@@ -10,7 +10,7 @@ import {
 export const HolidayList: React.FC = () => {
   const holidays = useHolidayStore((state) => state.holidays);
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const today = React.useMemo(() => new Date(), []);
+  const today = React.useMemo(() => new Date().setHours(0, 0, 0, 0), []);
   const thirtyDaysLater = addDays(today, 30);
 
   // 篩選未來30天內的假期
