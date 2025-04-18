@@ -69,10 +69,11 @@ const fetchHolidays = async () => {
   }
 
   // 從 API 獲取新數據
-  // const response = await fetch(
-  //   "https://res.data.gov.hk/api/get-download-file?name=https%3A%2F%2Fwww.1823.gov.hk%2Fcommon%2Fical%2Ftc.json"
-  // );
-  const response = await fetch("https://img.shashin.cc/holidays/tc.json");
+
+  const response = await fetch(
+    import.meta.env.VITE_HOLIDAY_API ||
+      "https://res.data.gov.hk/api/get-download-file?name=https%3A%2F%2Fwww.1823.gov.hk%2Fcommon%2Fical%2Ftc.json"
+  );
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
