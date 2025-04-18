@@ -25,6 +25,7 @@ const CustomHolidayForm = () => {
   const aiPromptTemplate = `請將以下假期列表轉換為嚴格符合此JSON格式：
 - 日期用YYYYMMDD格式的字串陣列
 - 保留原始假期名稱
+- vevent陣列中每一個對象只對應一天假期
 - 範例格式：
 ${JSON.stringify(JSON.parse(defaultHolidays), null, 2)}
 
@@ -178,15 +179,13 @@ Date	Day of the week	Bank holiday
     </div>
   );
 
-  // 其他部分保持原有逻辑不变...
-
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">自訂公眾假期</h2>
 
       <HelperSection />
 
-      {/* 原有JSON输入和保存部分 */}
+      {/* 原有JSON輸入和保存部分 */}
       <div className="mb-4 text-gray-600">
         <p className="font-medium mb-2">3. 在此貼上正確的JSON格式：</p>
         <p className="mb-2 text-sm text-gray-600">
@@ -202,7 +201,7 @@ Date	Day of the week	Bank holiday
         placeholder={defaultHolidays}
       />
 
-      {/* 保存按钮组 */}
+      {/* 保存按鈕組 */}
       <div className="flex gap-4">
         <button
           disabled={jsonInput.trim() ? false : true}
