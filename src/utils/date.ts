@@ -9,6 +9,8 @@ import {
 import { useHolidayStore } from "../store";
 import { zhHK } from "date-fns/locale";
 
+export const MAX_TIMESTAMP = 8640000000000000;
+
 // 新增：獲取最早可選擇的日期
 export const getEarliestSelectableDate = (): Date => {
   const holidays = useHolidayStore.getState().holidays;

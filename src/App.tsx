@@ -13,6 +13,9 @@ import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import { Statistics } from "./pages/Statistics";
 import ResignationCalculator from "./pages/ResignationCalculator";
 import InterviewRecord from "./pages/InterviewRecord";
+import CustomHolidayForm from "./pages/CustomHolidayForm";
+import { toast, ToastContainer } from "react-toastify";
+import { holidayDataConvert, CachedHolidays } from "./utils/holiday";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,15 +34,6 @@ const LoadingOverlay = () => (
     </div>
   </div>
 );
-
-// 定義緩存數據的類型
-interface CachedHolidays {
-  data: Array<{
-    date: string; // 存儲時轉為字符串
-    name: string;
-  }>;
-  timestamp: number;
-}
 
 // 緩存過期時間設置（7天）
 const CACHE_EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000;
@@ -86,13 +80,7 @@ const fetchHolidays = async () => {
   }
 
   // 處理數據
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const holidays = data.vcalendar[0].vevent.map((event: any) => ({
-    date: new Date(
-      event.dtstart[0].replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3")
-    ),
-    name: event.summary,
-  }));
+  const holidays = holidayDataConvert(data);
 
   // 存儲到 localStorage
   try {
@@ -123,7 +111,9 @@ const AppContent = () => {
     // 清除 localStorage 中的緩存
     localStorage.removeItem("holidaysCache");
     // 使當前的 query 失效並重新獲取
-    queryClient.invalidateQueries({ queryKey: ["holidays"] });
+    queryClient.invalidateQueries({ queryKey: ["holidays"] }).then(() => {
+      toast.success("已更新香港公眾假期數據");
+    });
   };
 
   const { isLoading, error } = useQuery({
@@ -190,6 +180,12 @@ const AppContent = () => {
                   className="flex items-center px-4 text-gray-700 hover:text-gray-900"
                 >
                   辭職日期計算器
+                </Link>
+                <Link
+                  to="/custom-holiday"
+                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
+                >
+                  自訂公眾假期
                 </Link>
                 <Link
                   to="/interview-record"
@@ -270,6 +266,13 @@ const AppContent = () => {
                     辭職日期計算器
                   </Link>
                   <Link
+                    to="/custom-holiday"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsDrawerOpen(false)}
+                  >
+                    自訂公眾假期
+                  </Link>
+                  <Link
                     to="/interview-record"
                     className="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors"
                     onClick={() => setIsDrawerOpen(false)}
@@ -339,6 +342,7 @@ const AppContent = () => {
         {/* 路由內容 */}
         <Routes>
           <Route path="/" element={<ResignationCalculator />} />
+          <Route path="/custom-holiday" element={<CustomHolidayForm />} />
           <Route path="/interview-record" element={<InterviewRecord />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route
@@ -356,9 +360,10 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AppContent />
-        <ScrollToTop />
         <DevTools />
       </QueryClientProvider>
+      <ScrollToTop />
+      <ToastContainer />
     </BrowserRouter>
   );
 }
