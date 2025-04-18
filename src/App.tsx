@@ -112,7 +112,10 @@ const AppContent = () => {
     localStorage.removeItem("holidaysCache");
     // 使當前的 query 失效並重新獲取
     queryClient.invalidateQueries({ queryKey: ["holidays"] }).then(() => {
-      toast.success("已更新香港公眾假期數據");
+      const state = queryClient.getQueryState(["holidays"]);
+      if (state && !state.error) {
+        toast.success("已更新香港公眾假期數據");
+      }
     });
   };
 
