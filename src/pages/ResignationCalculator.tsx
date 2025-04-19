@@ -12,6 +12,8 @@ import {
   startOfDay,
   isBefore,
   differenceInCalendarDays,
+  endOfMonth,
+  getDate,
 } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import { Value } from "react-calendar/src/shared/types.js";
@@ -84,6 +86,24 @@ const ResignationCalculator: React.FC = () => {
     });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  function getNextMonthsPrevDay(date: Date, month: number) {
+    // 如果是當月最後一天，返回下個月最後一天
+    if (isSameDay(date, endOfMonth(date))) {
+      return endOfMonth(addMonths(date, month));
+    }
+
+    const nextMonthSameDay = addMonths(date, month);
+
+    // 檢查加一個月後的月份有無同一日
+    if (getDate(nextMonthSameDay) !== getDate(date)) {
+      // 下個月無同一日，返回下個月最後一天
+      return endOfMonth(addMonths(date, month));
+    } else {
+      // 返回下個月同一日的前一天
+      return subDays(nextMonthSameDay, 1);
+    }
+  }
+
   // 計算最後工作日和通知類型
   const calculateResignationDetails = (resignDate: Date): CalculationResult => {
     const employmentDuration = differenceInCalendarDays(
@@ -121,15 +141,15 @@ const ResignationCalculator: React.FC = () => {
           noticeType = `公司規定${config.companyNoticePeriodValue}天通知期`;
         } else {
           // 按月計算
-          lastWorkDay = addDays(
-            addMonths(resignDate, config.companyNoticePeriodValue),
-            -1
+          lastWorkDay = getNextMonthsPrevDay(
+            resignDate,
+            config.companyNoticePeriodValue
           );
           noticeType = `公司規定${config.companyNoticePeriodValue}個月通知期`;
         }
       } else {
         // 默認一個月通知期
-        lastWorkDay = addDays(addMonths(resignDate, 1), -1);
+        lastWorkDay = getNextMonthsPrevDay(resignDate, 1);
         noticeType = "一個月通知期";
       }
     }
