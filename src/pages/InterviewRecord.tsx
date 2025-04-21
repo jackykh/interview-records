@@ -25,18 +25,6 @@ const InterviewRecord = () => {
           <div>
             <h2 className="text-xl font-semibold mb-4">新增記錄</h2>
             <InterviewForm />
-            <div className="mt-2 flex justify-center">
-              <span className="text-sm text-gray-500">
-                意見反饋：
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="mailto:topiary.bugs.5j@icloud.com"
-                >
-                  topiary.bugs.5j@icloud.com
-                </a>
-              </span>
-            </div>
           </div>
           <div>
             <InterviewList />

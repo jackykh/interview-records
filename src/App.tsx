@@ -16,6 +16,7 @@ import InterviewRecord from "./pages/InterviewRecord";
 import CustomHolidayForm from "./pages/CustomHolidayForm";
 import { toast, ToastContainer } from "react-toastify";
 import { holidayDataConvert, CachedHolidays } from "./utils/holiday";
+import FAQPage from "./pages/FAQ";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -196,6 +197,12 @@ const AppContent = () => {
                 >
                   面試記錄
                 </Link>
+                <Link
+                  to="/faq"
+                  className="flex items-center px-4 text-gray-700 hover:text-gray-900"
+                >
+                  常見問題
+                </Link>
               </div>
 
               {/* 更新按鈕 */}
@@ -282,6 +289,13 @@ const AppContent = () => {
                   >
                     面試記錄
                   </Link>
+                  <Link
+                    to="/faq"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsDrawerOpen(false)}
+                  >
+                    常見問題
+                  </Link>
                 </div>
               </div>
               {/* 抽屜底部 */}
@@ -352,6 +366,7 @@ const AppContent = () => {
             path="/resignation-calculator"
             element={<Navigate to="/" replace />}
           />
+          <Route path="/faq" element={<FAQPage />} />
         </Routes>
       </div>
     </>
