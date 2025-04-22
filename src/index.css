@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+.react-calendar__tile:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.react-calendar__tile--now {
+  background: #e6f3ff !important;
+}
+
+.react-calendar__tile--active {
+  background: #006edc !important;
+  color: white !important;
+}

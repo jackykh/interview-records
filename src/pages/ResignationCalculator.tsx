@@ -824,28 +824,4 @@ const ResignationCalculator: React.FC = () => {
   );
 };
 
-// 添加自定義 CSS 樣式
-const calendarStyles = `
-  .react-calendar__tile:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .react-calendar__tile--now {
-    background: #e6f3ff !important;
-  }
-  
-  .react-calendar__tile--active {
-    background: #006edc !important;
-    color: white !important;
-  }
-`;
-
-// 將樣式添加到文檔中
-if (typeof document !== "undefined") {
-  const style = document.createElement("style");
-  style.textContent = calendarStyles;
-  document.head.appendChild(style);
-}
-
 export default ResignationCalculator;
