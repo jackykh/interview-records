@@ -92,16 +92,6 @@ const FAQPage: React.FC = () => {
               </a>
             </span>
           </div>
-          <div className="flex justify-center">
-            <a
-              href="https://github.com/jackykh/interview-records"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-800 hover:text-blue-900"
-            >
-              Source on GitHub
-            </a>
-          </div>
         </div>
       </div>
     </div>
