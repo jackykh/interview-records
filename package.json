@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "download-ical": "node scripts/download-ical.mjs",
+    "build": "npm run download-ical && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
